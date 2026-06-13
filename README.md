@@ -68,13 +68,16 @@ shortvideodownloader/
 │   ├── validator.py     # 8-layer URL validation
 │   ├── downloader.py    # yt-dlp wrapper: info + download + cleanup
 │   └── static/
-│       ├── index.html   # Single-page UI
-│       ├── style.css    # Design system (dark mode, mobile-first)
-│       ├── app.js       # Frontend logic (XSS-safe, debounced validation)
+│       ├── index.html        # Single-page UI (OG tags, FAQ, SEO)
+│       ├── style.css         # Design system (dark mode, mobile-first)
+│       ├── app.js            # Frontend logic (XSS-safe, debounced validation)
+│       ├── 404.html          # Custom error page
 │       ├── privacy.html
 │       ├── terms.html
 │       ├── dmca.html
-│       └── contact.html
+│       ├── contact.html
+│       ├── robots.txt        # SEO: only homepage indexed
+│       └── sitemap.xml       # Sitemap for Google Search Console
 ├── tests/
 │   ├── test_validator.py   # 57 attack + edge case tests
 │   ├── test_api.py         # Security headers, rate limiting, bad input
