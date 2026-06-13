@@ -1,0 +1,29 @@
+# shortvideodownloader.com — Caddy reverse proxy
+# Caddy automatically obtains and renews Let's Encrypt certificates.
+# No manual SSL configuration needed.
+
+# Redirect www → apex (non-www)
+www.shortvideodownloader.com {
+    redir https://shortvideodownloader.com{uri} permanent
+}
+
+# Main site
+shortvideodownloader.com {
+    reverse_proxy app:8000
+
+    # HSTS: tell browsers to always use HTTPS for 1 year
+    # (add to preload list at hstspreload.org after confirming everything works)
+    header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Compress responses
+    encode gzip zstd
+
+    # Access log (optional — comment out to disable)
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+        format json
+    }
+}

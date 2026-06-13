@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Short Video Downloader — Fast & Safe Video Download</title>
+  <meta name="description" content="Download YouTube, Instagram, TikTok, X and more videos safely. No sign-up, no ads, no popups. Files are deleted from our server within 1 hour.">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" href="data:,">
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand-mini" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 2.5 4.5 5.4v6.1c0 4.6 3.2 8 7.5 9.9 4.3-1.9 7.5-5.3 7.5-9.9V5.4L12 2.5Z"/>
+        <path d="M10 9.2v5.6l4.8-2.8L10 9.2Z" fill="currentColor" stroke="none"/>
+      </svg>
+      <span>Short Video <b>Downloader</b></span>
+    </a>
+    <span class="ssl-pill" title="Your connection is encrypted">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      SSL Secure
+    </span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <span class="hero-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 4.5 5.4v6.1c0 4.6 3.2 8 7.5 9.9 4.3-1.9 7.5-5.3 7.5-9.9V5.4L12 2.5Z"/><path d="m9 12 2 2 4-4"/></svg>
+      Ad-free · No sign-up · Files deleted in 1 hour
+    </span>
+    <h1>Paste the link, <span class="grad">download safely.</span></h1>
+    <p class="tagline">Download YouTube, Instagram, TikTok and X videos in seconds as clean MP4 or MP3. Only the video lands on your device — nothing else.</p>
+  </section>
+
+  <section class="card search-card" id="search-card">
+    <div class="input-row">
+      <input id="url-input" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false"
+             placeholder="Paste video link here…"
+             aria-label="Video link" maxlength="2048">
+      <button id="go-btn" disabled>Download</button>
+    </div>
+    <p id="status" class="status" role="status">Waiting for a link — security check runs the moment you paste.</p>
+  </section>
+
+  <section id="preview" class="card preview hidden" aria-live="polite"></section>
+
+  <div class="chips" aria-label="Supported platforms">
+    <span class="chip"><i class="dot yt"></i>YouTube</span>
+    <span class="chip"><i class="dot ig"></i>Instagram</span>
+    <span class="chip"><i class="dot tt"></i>TikTok</span>
+    <span class="chip"><i class="dot x"></i>X (Twitter)</span>
+    <span class="chip"><i class="dot fb"></i>Facebook</span>
+    <span class="chip"><i class="dot vm"></i>Vimeo</span>
+    <span class="chip"><i class="dot rd"></i>Reddit</span>
+    <span class="chip"><i class="dot tw"></i>Twitch</span>
+    <span class="chip"><i class="dot dm"></i>Dailymotion</span>
+  </div>
+
+  <ul class="trust" aria-label="Security guarantees">
+    <li>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      <div><b>Encrypted connection</b><span>All traffic protected with SSL</span></div>
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <div><b>No traces left</b><span>Files deleted from server within 1 hour</span></div>
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>
+      <div><b>Clean experience</b><span>No ads, no popups, no redirects</span></div>
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.4-3.2 4.2-5 7.5-5s6.1 1.8 7.5 5"/></svg>
+      <div><b>No account needed</b><span>No personal data collected or stored</span></div>
+    </li>
+  </ul>
+
+  <section class="how" aria-label="How it works">
+    <div class="step"><b>1</b><div><strong>Paste</strong><span>Link is instantly checked for safety</span></div></div>
+    <div class="step"><b>2</b><div><strong>Choose</strong><span>Pick MP4 quality or MP3 audio</span></div></div>
+    <div class="step"><b>3</b><div><strong>Download</strong><span>File goes straight to your device, server copy is deleted</span></div></div>
+  </section>
+
+</main>
+
+<footer>
+  <nav>
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms of Use</a>
+    <a href="/dmca">Copyright Notice</a>
+    <a href="/contact">Contact</a>
+  </nav>
+  <p>© 2026 shortvideodownloader.com — Users are responsible for the copyright of downloaded content.</p>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
