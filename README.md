@@ -1,69 +1,142 @@
-# shortvideodownloader.com — Faz 1
+# shortvideodownloader.com
 
-Tek sayfa, güvenlik öncelikli video indirme sitesi. Şu an çalışan:
-**canlı link doğrulama katmanı + video bilgisi + gerçek indirme (MP4/MP3)
-+ otomatik dosya silme + güven veren arayüz.**
+A fast, secure, single-page video downloader supporting YouTube, Instagram, TikTok, X (Twitter), Facebook, Vimeo, Reddit, Twitch and Dailymotion.
 
-## Çalıştırma (local)
+**Stack:** FastAPI · yt-dlp · ffmpeg · Caddy · Docker
 
-```bash
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-# tarayıcı: http://127.0.0.1:8000
+---
+
+## How It Works
+
+```mermaid
+flowchart TD
+    A["User visits the site (HTTPS)"] --> B["Pastes a video link"]
+    B --> C{"8-layer URL validation\n(allowlist, SSRF, scheme, domain...)"}
+    C -- "Invalid" --> C1["Clear error message shown"]
+    C1 --> B
+    C -- "Valid" --> D["Server fetches video info via yt-dlp"]
+    D --> E{"Video accessible?"}
+    E -- "No\n(private / deleted / age-restricted)" --> E1["Descriptive error shown"]
+    E1 --> B
+    E -- "Yes" --> F["Preview shown: title + thumbnail + duration"]
+    F --> G["User picks format\n(MP4 720p / 1080p / 2160p / MP3)"]
+    G --> H["Download starts\n(rate-limited · size-limited · isolated temp dir)"]
+    H --> I["File delivered over HTTPS\n(clean filename, mp4/mp3 only)"]
+    I --> J["Temp file auto-deleted from server"]
+    J --> K["Done — download another?"]
+    K --> B
 ```
 
-## Testler
+---
+
+## Security
+
+Every URL passes through 8 validation layers **before yt-dlp ever runs:**
+
+| # | Check | Blocks |
+|---|-------|--------|
+| 1 | Input sanitisation | empty, too long, control chars, CRLF injection (`%0d%0a`) |
+| 2 | Scheme allowlist | `javascript:`, `data:`, `file:`, `ftp:` |
+| 3 | Credential trick | `youtube.com@evil.com` style SSRF disguise |
+| 4 | SSRF | IP addresses, `localhost`, `.internal/.local/.lan` |
+| 5 | Non-standard ports | e.g. `:8443` |
+| 6 | Domain allowlist | lookalike domains (`evil-youtube.com`, punycode homographs) |
+| 7 | Video path pattern | homepage, profile, search URLs rejected |
+| 8 | Normalisation | tracking params stripped (`utm_*`, `si`, `fbclid`, `igsh`…) |
+
+Additional hardening:
+- Strict CSP + security headers on every response
+- API docs disabled (`/docs`, `/redoc`, `/openapi.json` → 404)
+- Per-IP rate limiting (validate 30/min · info 10/min · download 5/min)
+- Max 3 concurrent downloads (BoundedSemaphore)
+- 2 GB file size limit · 3 hour duration limit
+- Isolated temp dir per job → deleted immediately after transfer
+- Stale file sweeper removes anything older than 1 hour
+- Filename sanitised (RFC 5987 UTF-8 + ASCII fallback)
+- All API data rendered via `textContent` only — no `innerHTML` (XSS hygiene)
+- Thumbnails only shown if they start with `https://`
+- Zero external dependencies in frontend (no CDN, no fonts, no trackers)
+
+---
+
+## Project Structure
+
+```
+shortvideodownloader/
+├── app/
+│   ├── main.py          # FastAPI app: endpoints, security headers, rate limiting
+│   ├── validator.py     # 8-layer URL validation
+│   ├── downloader.py    # yt-dlp wrapper: info + download + cleanup
+│   └── static/
+│       ├── index.html   # Single-page UI
+│       ├── style.css    # Design system (dark mode, mobile-first)
+│       ├── app.js       # Frontend logic (XSS-safe, debounced validation)
+│       ├── privacy.html
+│       ├── terms.html
+│       ├── dmca.html
+│       └── contact.html
+├── tests/
+│   ├── test_validator.py   # 57 attack + edge case tests
+│   ├── test_api.py         # Security headers, rate limiting, bad input
+│   └── test_download.py    # Format allowlist, sanitisation, mock + e2e
+├── Dockerfile
+├── docker-compose.yml
+├── Caddyfile               # Auto HTTPS via Let's Encrypt
+├── requirements.txt
+└── DEPLOY.md               # Step-by-step production deployment guide
+```
+
+---
+
+## Local Development
+
+**Prerequisites:** Python 3.12+, ffmpeg
+
+```bash
+# Install ffmpeg (Windows)
+winget install ffmpeg
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run
+uvicorn app.main:app --reload
+
+# Open browser
+http://127.0.0.1:8000
+```
+
+### Run Tests
 
 ```bash
 pip install -r requirements-dev.txt
 python -m pytest -v
 ```
 
-## Güvenlik katmanı (app/validator.py)
+---
 
-Her URL motora ulaşmadan 8 süzgeçten geçer:
+## Production Deployment
 
-| # | Kontrol | Engellediği şey |
-|---|---|---|
-| 1 | Girdi temizliği | boş, aşırı uzun, kontrol karakteri, %0d%0a (CRLF) enjeksiyonu |
-| 2 | Şema | `javascript:`, `data:`, `file:`, `ftp:` |
-| 3 | Kimlik hilesi | `youtube.com@kotu-site.com` tarzı gizlenmiş adres |
-| 4 | SSRF | IP adresi, `localhost`, `.internal/.local/.lan` iç ağ adresleri |
-| 5 | Port | standart dışı portlar (örn. `:8443`) |
-| 6 | Domain allowlist | sahte/benzer domainler (`evil-youtube.com`, punycode homograph) |
-| 7 | Video yolu deseni | ana sayfa, profil, arama linkleri (kaynak israfı + saçma girdi) |
-| 8 | Normalizasyon | takip (`utm_*`, `si`, `fbclid`...) ve playlist parametreleri |
+See **[DEPLOY.md](./DEPLOY.md)** for the full step-by-step guide.
 
-API katmanında ek olarak: sıkı CSP + güvenlik başlıkları, kapalı API
-dokümantasyonu, IP başına rate limit (doğrulama 30/dk, bilgi 10/dk).
-Arayüzde: API verisi asla `innerHTML` ile basılmaz (XSS hijyeni), kapak
-görseli yalnızca `https://` ise gösterilir, dış kaynak (font/ikon/CDN) yok.
-
-## Yapı
-
-```
-app/
-  main.py        FastAPI: endpoint'ler, güvenlik başlıkları, rate limit
-  validator.py   Link güvenlik katmanı (8 kontrol)
-  downloader.py  yt-dlp sarmalayıcı (bilgi çekme + indirme + otomatik temizlik)
-  static/        index.html + style.css + app.js (tek sayfa arayüz)
-tests/           validator saldırı testleri + API testleri
+Quick summary:
+```bash
+# On your VPS
+git clone https://github.com/muhiddintalha/shortvideodownloader.com /opt/svd
+cd /opt/svd
+docker compose up -d --build
 ```
 
-## İndirme güvenliği (yeni)
+Caddy automatically provisions and renews the SSL certificate. No manual configuration needed.
 
-Format kimliği sıkı allowlist (mp3 | mp4-yükseklik), 2 GB dosya ve 3 saat
-süre limiti, canlı yayın reddi, eşzamanlı indirme sınırı (3 slot),
-IP başına 5 indirme/dk, izole iş klasörü → yanıt biter bitmez silinir,
-1 saatten eski artıklar otomatik süpürülür, dosya adı sanitizasyonu
-(RFC 5987 UTF-8 + ASCII fallback). MP3 ve kalite birleştirme için
-sunucuda ffmpeg gerekir.
+---
 
-## Sonraki fazlar
+## Supported Platforms
 
-1. Docker + Caddy (otomatik HTTPS) + Cloudflare → yayına alma
-2. Gizlilik Politikası / Kullanım Şartları / Telif (DMCA) sayfaları
-3. Tasarım cilası (logo, animasyonlar, koyu tema)
+YouTube · Instagram · TikTok · X (Twitter) · Facebook · Vimeo · Reddit · Twitch · Dailymotion
 
-Üretim notu: yt-dlp'yi izole bir container'da, kısıtlı kaynak ve egress
-kurallarıyla çalıştırın; yt-dlp güncel tutulmalı (platform değişiklikleri).
+---
+
+## License
+
+This project is for educational purposes. Users are responsible for compliance with the terms of service of each platform and applicable copyright law.
