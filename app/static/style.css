@@ -371,6 +371,22 @@ body {
   line-height: 1.6;
 }
 
+/* --------------------------------------------------------------------- FAQ */
+.faq { max-width: 960px; margin: 48px auto 0; }
+.faq h2 { font-size: 1.25rem; font-weight: 700; margin: 0 0 20px; text-align: center; }
+.faq-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.faq-item summary {
+  padding: 16px 18px; font-weight: 600; cursor: pointer; list-style: none;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 8px; user-select: none;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; font-size: 1.2rem; color: var(--accent); flex-shrink: 0; transition: transform 0.2s; margin-top: 1px; }
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item p { margin: 0; padding: 0 18px 16px; color: var(--muted); line-height: 1.65; font-size: 0.88rem; }
+@media (max-width: 680px) { .faq-list { grid-template-columns: 1fr; } }
+
 /* ------------------------------------------------------------------ footer */
 footer {
   border-top: 1px solid var(--border);
@@ -383,6 +399,9 @@ footer nav { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
 footer a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
 footer a:hover { color: var(--accent); }
 footer p { margin: 0; }
+.footer-social { display: flex; justify-content: center; gap: 14px; margin-bottom: 12px; }
+.footer-social a { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: var(--border); color: var(--muted); transition: background 0.15s, color 0.15s; }
+.footer-social a:hover { background: var(--accent); color: #fff; }
 
 /* -------------------------------------------------------------- animasyonlar */
 @keyframes rise {

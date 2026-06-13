@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /$
+Disallow: /privacy
+Disallow: /terms
+Disallow: /dmca
+Disallow: /contact
+Disallow: /api/
+Disallow: /static/
+
+Sitemap: https://shortvideodownloader.com/sitemap.xml

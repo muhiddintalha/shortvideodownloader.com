@@ -20,6 +20,7 @@ from urllib.parse import quote
 from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from starlette.background import BackgroundTask
@@ -109,6 +110,13 @@ async def bad_body(request: Request, exc: RequestValidationError):
         {"valid": False, "code": "bad_request", "message": "Geçersiz istek."},
         status_code=400,
     )
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_error(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404:
+        return FileResponse(BASE_DIR / "static" / "404.html", status_code=404)
+    return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
 
 
 # ------------------------------------------------------------------ endpoints
@@ -227,6 +235,16 @@ async def dmca():
 @app.get("/contact")
 async def contact():
     return FileResponse(BASE_DIR / "static" / "contact.html")
+
+
+@app.get("/robots.txt")
+async def robots():
+    return FileResponse(BASE_DIR / "static" / "robots.txt", media_type="text/plain")
+
+
+@app.get("/sitemap.xml")
+async def sitemap():
+    return FileResponse(BASE_DIR / "static" / "sitemap.xml", media_type="application/xml")
 
 
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
