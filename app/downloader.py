@@ -152,7 +152,7 @@ def _format_selector(format_id: str) -> tuple:
         return "Geçersiz format seçimi.", {}
     if _has_ffmpeg():
         fmt = (
-            f"bestvideo[height<={height}][ext=mp4]+bestaudio[ext=m4a]"
+            f"bestvideo[height<={height}][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<={height}][ext=mp4]+bestaudio[ext=m4a]"
             f"/best[height<={height}][ext=mp4]"
             f"/best[height<={height}]/best"
         )
