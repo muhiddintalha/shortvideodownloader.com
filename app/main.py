@@ -48,7 +48,7 @@ SECURITY_HEADERS = {
     "Cross-Origin-Opener-Policy": "same-origin",
     "Content-Security-Policy": (
         "default-src 'none'; "
-        "script-src 'self' https://www.googletagmanager.com; "
+        "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; "
         "style-src 'self'; "
         "img-src 'self' https: data:; "
         "connect-src 'self' https://www.google-analytics.com https://analytics.google.com; "
